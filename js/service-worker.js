@@ -9,41 +9,27 @@ const urlsToCache = [
   '/images/checked.png'
 ];
 
-// Install the service worker and cache all necessary files
-self.addEventListener('install', function(event) {
+self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-        return cache.addAll(urlsToCache);
-      })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache))
   );
 });
 
-// Fetch the files from the cache first, then the network
-self.addEventListener('fetch', function(event) {
+self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request)
-      .then(function(response) {
-        if (response) {
-          return response; // Return from cache
-        }
-        return fetch(event.request); // Fetch from network
-      })
+    caches.match(event.request).then((response) => response || fetch(event.request))
   );
 });
 
-// Update the service worker and clean old caches
-self.addEventListener('activate', function(event) {
+self.addEventListener('activate', (event) => {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
-    caches.keys().then(function(cacheNames) {
-      return Promise.all(
-        cacheNames.map(function(cacheName) {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    caches.keys().then((cacheNames) =>
+      Promise.all(
+        cacheNames.map((cacheName) =>
+          cacheWhitelist.indexOf(cacheName) === -1 ? caches.delete(cacheName) : null
+        )
+      )
+    )
   );
 });
