@@ -1,30 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
-  <title>To Do List App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Tasks | Modern Todo App</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
-  <div class="container">
-    <div class="todo-app">
-      <h1>To-do List <img src="images/icon1.png"></h1>
-          <input type="text" id="input-field" placeholder="Enter Task">
-    <button id="add-button">Add Task</button>
-    <ul id="list-container"><!-- <li class="checked">Task 1</li>
-<li>Task 2</li>
-<li>Task 3</li> -->
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <h1 class="app-title">Nova Tasks</h1>
+                <div class="header-actions">
+                    <button class="btn btn-ai" id="ai-assistant-btn">
+                        <i class="fas fa-robot"></i> AI Assistant
+                    </button>
+                    <div class="theme-toggle">
+                        <i class="fas fa-sun"></i>
+                        <label class="switch">
+                            <input type="checkbox" id="theme-switch">
+                            <span class="slider round"></span>
+                        </label>
+                        <i class="fas fa-moon"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- Optional: Uncomment for separate AI button container -->
+            <!-- <div class="ai-button-container">
+                <button class="btn btn-ai" id="ai-assistant-btn">
+                    <i class="fas fa-robot"></i> AI Assistant
+                </button>
+            </div> -->
+        </header>
 
-    </ul>
+        <main class="app-main">
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <button class="btn btn-primary" id="add-task-btn">
+                        <i class="fas fa-plus"></i> Add Task
+                    </button>
+                </div>
+                <nav class="sidebar-nav">
+                    <ul>
+                        <li class="active" data-filter="all">
+                            <i class="fas fa-tasks"></i>
+                            <span>All Tasks</span>
+                            <span class="badge" id="all-count">0</span>
+                        </li>
+                        <li data-filter="today">
+                            <i class="fas fa-calendar-day"></i>
+                            <span>Today</span>
+                            <span class="badge" id="today-count">0</span>
+                        </li>
+                        <li data-filter="important">
+                            <i class="fas fa-star"></i>
+                            <span>Important</span>
+                            <span class="badge" id="important-count">0</span>
+                        </li>
+                        <li data-filter="completed">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Completed</span>
+                            <span class="badge" id="completed-count">0</span>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="tags-section">
+                    <h3>Tags</h3>
+                    <div class="tags-container" id="tags-container">
+                        <!-- Tags will be added dynamically -->
+                    </div>
+                    <div class="add-tag">
+                        <input type="text" id="new-tag-input" placeholder="Add new tag...">
+                        <button class="btn btn-small" id="add-tag-btn"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div class="task-controls">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="task-search" placeholder="Search tasks...">
+                    </div>
+                    <div class="sort-options">
+                        <select id="sort-by">
+                            <option value="dueDate">Sort by Due Date</option>
+                            <option value="priority">Sort by Priority</option>
+                            <option value="createdAt">Sort by Creation Date</option>
+                            <option value="title">Sort by Title</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="tasks-container" id="tasks-container">
+                    <!-- Tasks will be added dynamically -->
+                    <div class="empty-state">
+                        <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No tasks">
+                        <h3>No tasks found</h3>
+                        <p>Add a new task to get started</p>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
-  </div>
-  <script src="js/script.js"></script>
-<script src="js/sw-register.js"></script>
+
+    <!-- Add/Edit Task Modal -->
+    <div class="modal" id="task-modal">
+        <div class="modal-content">
+            <span class="close-btn">×</span>
+            <h2 id="modal-title">Add New Task</h2>
+            <form id="task-form">
+                <div class="form-group">
+                    <label for="task-title">Title</label>
+                    <input type="text" id="task-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="task-description">Description</label>
+                    <textarea id="task-description" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="task-due-date">Due Date</label>
+                        <input type="date" id="task-due-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="task-priority">Priority</label>
+                        <select id="task-priority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Tags</label>
+                    <div class="tags-selector" id="tags-selector">
+                        <!-- Tags will be added dynamically -->
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-task-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- AI Assistant Modal -->
+    <div class="modal" id="ai-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-ai-modal">×</span>
+            <h2>AI Assistant</h2>
+            <div class="ai-conversation" id="ai-conversation"></div>
+            <div class="ai-input-container">
+                <input type="text" id="ai-user-input" placeholder="Ask the AI for help...">
+                <button id="ai-send-btn"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
-</html>
+          </html>
